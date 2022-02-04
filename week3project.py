@@ -1,60 +1,43 @@
+import statistics
 import requests
 
 partner_data_unfilt = requests.get('https://ct-mock-tech-assessment.herokuapp.com/').json()
-# print(partner_data_unfilt['partners'])
-# for i in partner_data_unfilt['partners']:
-#     if "United States" in i['country']:
-#         print(i)
 
-us_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'United States' in x['country']]
-ireland_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Ireland' in x['country']]
-spain_clean = [[str(x['email']) + " " + str(x['lastName']) + " " +  str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Spain' in x['country']]
-mexico_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Mexico' in x['country']]
-canada_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Canada' in x['country']]
-singapore_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Singapore' in x['country']]
-japan_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'Japan' in x['country']]
-uk_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'United Kingdom' in x['country']]
-france_clean = [[str(x['email']) + " " + str(x['lastName']) + str(x['availableDates'])] for x in partner_data_unfilt['partners'] if 'France' in x['country']]
-# print(canada_clean)
-
-clean_dict = {
-    'United States': us_clean,
-    'Ireland': ireland_clean,
-    'Spain': spain_clean,
-    'Mexico': mexico_clean,
-    'Canada': canada_clean,
-    'Singapore': singapore_clean,
-    'Japan': japan_clean,
-    'United Kingdom': uk_clean,
-    'France': france_clean
+test_dict = {
+    'United States': { 'Partners': [x for x in partner_data_unfilt['partners'] if 'United States' in x['country']]},
+    'Ireland': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Ireland' in x['country']]},
+    'Spain': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Spain' in x['country']]},
+    'Mexico': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Mexico' in x['country']]},
+    'Canada': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Canada' in x['country']]},
+    'Singapore': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Singapore' in x['country']]},
+    'Japan': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Japan' in x['country']]},
+    'United Kingdom': {'Partners': [x for x in partner_data_unfilt['partners'] if 'United Kingdom' in x['country']]},
+    'France': {'Partners': [x for x in partner_data_unfilt['partners'] if 'France' in x['country']]}  
 }
 
-# def fill_meeting(country, dict):
-#     dict['attendee_count'] += 1
-#     dict['attendees'] = [x['email'] for x in clean_dict[country]]
+# Function for returning the newly formatted api with the start dates, attendees, and the attendee count
+def create_meeting(a_dict):
+    dates = []
+    attendees = []
+    current_country = ''
+    attendees_count = 0
+    meetings_for_partners_by_country = []
+    for i in a_dict:
+        current_country = i
+        for partner in a_dict[i]['Partners']:
+            for date in partner['availableDates']:
+                dates.append(date)
+            if statistics.mode(dates) in partner['availableDates']:
+                attendees.append(partner['lastName'])
+                attendees_count += 1
 
-# Function to return the desired format of the meetings. WORK ON THIS TOMORROW
-def create_meet(country):
-    meetings = {
-        'location': country,
-        'start_date': '',
-        'attendee_count': 0,
-        }
-    start_april = '2017-04-25'
-    end_april = '2017-04-28'
-    start_may = '2017-05-03'
-    end_may = '2017-05-22'
-    start_june = '2017-06-02'
-    end_june = '2017-06-08'
-    for i in country:
-        if '2017-06-01' and '2017-06-02' and '2017-06-03' in i:
-            # fill_meeting(country, meetings)
-            meetings['start_date'] = start_june
-        elif '2017-06-07' and '2017-06-08' and '2017-06-09' in i:
-            # fill_meeting(country, meetings)
-            meetings['start_date'] = end_june
-
-    
-    return meetings
-print(create_meet(us_clean))
+            meetings = {
+                'location': current_country,
+                'start_date': statistics.mode(dates),
+                'attendee_count': attendees_count,
+                'attendees': attendees,
+                }
+        meetings_for_partners_by_country.append(meetings)
+    return meetings_for_partners_by_country
+print(create_meeting(test_dict))
 
