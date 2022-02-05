@@ -3,6 +3,7 @@ import requests
 
 partner_data_unfilt = requests.get('https://ct-mock-tech-assessment.herokuapp.com/').json()
 
+# cleaned data set sorted by country, and assigned values with list comprehensions
 cleaned_dict = {
     'United States': { 'Partners': [x for x in partner_data_unfilt['partners'] if 'United States' in x['country']]},
     'Ireland': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Ireland' in x['country']]},
@@ -22,13 +23,13 @@ def create_meeting(a_dict):
     current_country = ''
     attendees_count = 0
     meetings_for_partners_by_country = []
-    for i in a_dict:
-        current_country = i
-        for partner in a_dict[i]['Partners']:
-            for date in partner['availableDates']:
-                dates.append(date)
+    for i in a_dict: # looking at key, which is the country
+        current_country = i # tracking which country we are on
+        for partner in a_dict[i]['Partners']: # moving deeper into the dictionary
+            for date in partner['availableDates']: # in order to access the available dates of each partner in our data set
+                dates.append(date) # appending dates to our list so we can get the mode of dates from partners by country
             if statistics.mode(dates) in partner['availableDates']:
-                attendees.append(partner['lastName'])
+                attendees.append(partner['lastName']) # appending a partner to the attendees list if the mode date is in their availability range
                 attendees_count += 1
 
             meetings = {
