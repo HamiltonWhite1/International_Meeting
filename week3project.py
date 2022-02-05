@@ -3,7 +3,7 @@ import requests
 
 partner_data_unfilt = requests.get('https://ct-mock-tech-assessment.herokuapp.com/').json()
 
-test_dict = {
+cleaned_dict = {
     'United States': { 'Partners': [x for x in partner_data_unfilt['partners'] if 'United States' in x['country']]},
     'Ireland': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Ireland' in x['country']]},
     'Spain': {'Partners': [x for x in partner_data_unfilt['partners'] if 'Spain' in x['country']]},
@@ -39,5 +39,9 @@ def create_meeting(a_dict):
                 }
         meetings_for_partners_by_country.append(meetings)
     return meetings_for_partners_by_country
-print(create_meeting(test_dict))
+print(create_meeting(cleaned_dict))
+
+# post_data = create_meeting(cleaned_dict)
+
+# p = requests.post('https://ct-mock-tech-assessment.herokuapp.com/', data=post_data)
 
