@@ -39,10 +39,11 @@ def create_meeting(a_dict):
                 'attendees': attendees,
                 }
         meetings_for_partners_by_country.append(meetings)
+
     return meetings_for_partners_by_country
 print(create_meeting(cleaned_dict))
 
 # post_data = create_meeting(cleaned_dict)
 
-# p = requests.post('https://ct-mock-tech-assessment.herokuapp.com/', data=post_data)
+# p = requests.post('https://ct-mock-tech-assessment.herokuapp.com/Post', data=post_data)
 
